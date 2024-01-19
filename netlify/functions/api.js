@@ -77,12 +77,6 @@ router.delete('/comments/:id', (req, res) => {
     })
 })
 
-
-
-
-
-
-
 router.post('/user/login', async (req, res) => {
     const now = new Date()
 
