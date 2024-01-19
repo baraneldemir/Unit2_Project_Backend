@@ -99,6 +99,15 @@ router.post('/user/login', async (req, res) => {
         res.sendStatus(200)
     } 
 })
+router.put('/comments/:id', (req, res) => {
+    Comment.updateOne({"_id": req.params.id}, {title: req.body.title, text: req.body.text})
+    .then(() => {
+        res.sendStatus(200)
+    })
+    .catch(err => {
+        res.sendStatus(500)
+    })
+})
 api.use('/api/', router)
 export const handler = serverless(api)
 

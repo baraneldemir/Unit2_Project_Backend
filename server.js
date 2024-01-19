@@ -69,6 +69,15 @@ app.post('/comments/add',(req, res) => {
     })
     .catch(err => console.error(err))
 })
+app.put('/comments/:id', (req, res) => {
+    Comment.updateOne({"_id": req.params.id}, {title: req.body.title, text: req.body.text})
+    .then(() => {
+        res.sendStatus(200)
+    })
+    .catch(err => {
+        res.sendStatus(500)
+    })
+})
 app.delete('/comments/:id', (req, res) => {
     Comment.findByIdAndDelete(req.params.id)
     .then(() => {
