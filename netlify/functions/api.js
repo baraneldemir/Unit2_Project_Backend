@@ -1,20 +1,17 @@
 import 'dotenv/config'
-import express from 'express'
+import express, { Router, application } from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
+import serverless from 'serverless-http'
 
 
-const app = express()
+const api = express()
 
-app.use(cors())
-app.use(bodyParser.json())
+api.use(cors())
+api.use(bodyParser.json())
 
-const port = process.env.PORT || 4000 
 
-app.listen(port,() => {
-    console.log(`listening on port: ${port}`)
-})
 
 mongoose.connect(process.env.DATABASE_URL)
 
@@ -40,23 +37,24 @@ const commentSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema)
 const Comment = mongoose.model('Comment', commentSchema)
+const router = Router()
 
-app.get('/', (req, res) => {
+router.get('/', (req, res) => {
     res.json({
-        message: 'Welcome to Speeding Fine App'
+        message: 'Welcome to Speeding Fine router'
     })
 })
-app.get('/login/form', (req, res) => {
+router.get('/login/form', (req, res) => {
     res.json({
         message: 'Welcome to form page'
     })
 })
 
-app.get('/comments', async(req, res) => {
+router.get('/comments', async(req, res) => {
     const allComments = await Comment.find({})
     res.json(allComments)
 })
-app.post('/comments/add',(req, res) => {
+router.post('/comments/add',(req, res) => {
     const comment = req.body
     const newComment = new Comment({
         title: comment.title,
@@ -69,7 +67,7 @@ app.post('/comments/add',(req, res) => {
     })
     .catch(err => console.error(err))
 })
-app.delete('/comments/:id', (req, res) => {
+router.delete('/comments/:id', (req, res) => {
     Comment.findByIdAndDelete(req.params.id)
     .then(() => {
         res.sendStatus(200)
@@ -85,7 +83,7 @@ app.delete('/comments/:id', (req, res) => {
 
 
 
-app.post('/user/login', async (req, res) => {
+router.post('/user/login', async (req, res) => {
     const now = new Date()
 
     // create a new user if it doesnt exist
@@ -107,4 +105,6 @@ app.post('/user/login', async (req, res) => {
         res.sendStatus(200)
     } 
 })
+
+export const handler = serverless(api)
 
